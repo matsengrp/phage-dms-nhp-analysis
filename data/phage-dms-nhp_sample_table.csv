@@ -1,0 +1,135 @@
+sample_id,Vaccine,age,days_post_infection,days_post_vaccination,library_batch,participant_ID,patient_status_vaccination,sample_ID,sample_group,sample_type,species
+1511,HBV + 250ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z16277,vaccinated,103,Vaccinated - (No prior infection),plasma,pigtail macaque
+1549,HBV + 250ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z16277,vaccinated,103,Vaccinated - (No prior infection),plasma,pigtail macaque
+516,HBV + 250ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z14176,vaccinated,104,Vaccinated - (No prior infection),plasma,pigtail macaque
+1550,HBV + 250ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z14176,vaccinated,104,Vaccinated - (No prior infection),plasma,pigtail macaque
+1515,HBV + 250ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z15331,vaccinated,105,Vaccinated - (No prior infection),plasma,pigtail macaque
+1553,HBV + 250ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z15331,vaccinated,105,Vaccinated - (No prior infection),plasma,pigtail macaque
+1517,HBV + 50ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z14289,vaccinated,106,Vaccinated - (No prior infection),plasma,pigtail macaque
+1555,HBV + 50ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z14289,vaccinated,106,Vaccinated - (No prior infection),plasma,pigtail macaque
+523,HBV + 50ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z15258,vaccinated,107,Vaccinated - (No prior infection),plasma,pigtail macaque
+1556,HBV + 50ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z15258,vaccinated,107,Vaccinated - (No prior infection),plasma,pigtail macaque
+525,HBV vaccine control,none,none,12 weeks (hbv),SPIKE1,Z16277,vaccinated,108,Vaccinated - (No prior infection),plasma,pigtail macaque
+1559,HBV vaccine control,none,none,12 weeks (hbv),SPIKE2,Z16277,vaccinated,108,Vaccinated - (No prior infection),plasma,pigtail macaque
+526,HBV vaccine control,none,none,12 weeks (hbv),SPIKE1,Z14176,vaccinated,109,Vaccinated - (No prior infection),plasma,pigtail macaque
+1560,HBV vaccine control,none,none,12 weeks (hbv),SPIKE2,Z14176,vaccinated,109,Vaccinated - (No prior infection),plasma,pigtail macaque
+529,HBV vaccine control,none,none,12 weeks (hbv),SPIKE1,Z15331,vaccinated,110,Vaccinated - (No prior infection),plasma,pigtail macaque
+1562,HBV vaccine control,none,none,12 weeks (hbv),SPIKE2,Z15331,vaccinated,110,Vaccinated - (No prior infection),plasma,pigtail macaque
+531,HBV vaccine control,none,none,12 weeks (hbv),SPIKE1,Z14289,vaccinated,111,Vaccinated - (No prior infection),plasma,pigtail macaque
+1564,HBV vaccine control,none,none,12 weeks (hbv),SPIKE2,Z14289,vaccinated,111,Vaccinated - (No prior infection),plasma,pigtail macaque
+532,HBV vaccine control,none,none,12 weeks (hbv),SPIKE1,Z15258,vaccinated,112,Vaccinated - (No prior infection),plasma,pigtail macaque
+1566,HBV vaccine control,none,none,12 weeks (hbv),SPIKE2,Z15258,vaccinated,112,Vaccinated - (No prior infection),plasma,pigtail macaque
+534,25ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z15015,vaccinated,113,Vaccinated - (No prior infection),plasma,pigtail macaque
+1569,25ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z15015,vaccinated,113,Vaccinated - (No prior infection),plasma,pigtail macaque
+1533,25ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z15389,vaccinated,114,Vaccinated - (No prior infection),plasma,pigtail macaque
+1571,25ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z15389,vaccinated,114,Vaccinated - (No prior infection),plasma,pigtail macaque
+538,25ug RNA + LION,none,none,6 weeks (cov),SPIKE1,Z16297,vaccinated,115,Vaccinated - (No prior infection),plasma,pigtail macaque
+1573,25ug RNA + LION,none,none,6 weeks (cov),SPIKE2,Z16297,vaccinated,115,Vaccinated - (No prior infection),plasma,pigtail macaque
+540,250ug RNA + NLC,none,none,6 weeks (cov),SPIKE1,Z14109,vaccinated,116,Vaccinated - (No prior infection),plasma,pigtail macaque
+589,250ug RNA + NLC,none,none,6 weeks (cov),SPIKE2,Z14109,vaccinated,116,Vaccinated - (No prior infection),plasma,pigtail macaque
+1538,250ug RNA + NLC,none,none,6 weeks (cov),SPIKE1,Z15289,vaccinated,117,Vaccinated - (No prior infection),plasma,pigtail macaque
+1576,250ug RNA + NLC,none,none,6 weeks (cov),SPIKE2,Z15289,vaccinated,117,Vaccinated - (No prior infection),plasma,pigtail macaque
+544,250ug RNA + NLC,none,none,6 weeks (cov),SPIKE1,Z16293,vaccinated,118,Vaccinated - (No prior infection),plasma,pigtail macaque
+1578,250ug RNA + NLC,none,none,6 weeks (cov),SPIKE2,Z16293,vaccinated,118,Vaccinated - (No prior infection),plasma,pigtail macaque
+877,none,none,0,none,SPIKE1,348,none,185,none,serum,rhesus macaque
+924,none,none,0,none,SPIKE2,348,none,185,none,serum,rhesus macaque
+878,none,none,56,none,SPIKE1,348,none,186,none,serum,rhesus macaque
+926,none,none,56,none,SPIKE2,348,none,186,none,serum,rhesus macaque
+881,none,none,0,none,SPIKE1,349,none,187,none,serum,rhesus macaque
+928,none,none,0,none,SPIKE2,349,none,187,none,serum,rhesus macaque
+882,none,none,56,none,SPIKE1,349,none,188,none,serum,rhesus macaque
+931,none,none,56,none,SPIKE2,349,none,188,none,serum,rhesus macaque
+885,none,none,1,none,SPIKE1,350,none,189,none,serum,rhesus macaque
+932,none,none,1,none,SPIKE2,350,none,189,none,serum,rhesus macaque
+886,none,none,56,none,SPIKE1,350,none,190,none,serum,rhesus macaque
+935,none,none,56,none,SPIKE2,350,none,190,none,serum,rhesus macaque
+888,none,none,1,none,SPIKE1,351,none,191,none,serum,rhesus macaque
+936,none,none,1,none,SPIKE2,351,none,191,none,serum,rhesus macaque
+891,none,none,56,none,SPIKE1,351,none,192,none,serum,rhesus macaque
+938,none,none,56,none,SPIKE2,351,none,192,none,serum,rhesus macaque
+892,none,none,1,none,SPIKE1,352,none,193,none,serum,rhesus macaque
+941,none,none,1,none,SPIKE2,352,none,193,none,serum,rhesus macaque
+895,none,none,56,none,SPIKE1,352,none,194,none,serum,rhesus macaque
+942,none,none,56,none,SPIKE2,352,none,194,none,serum,rhesus macaque
+896,none,none,1,none,SPIKE1,353,none,195,none,serum,rhesus macaque
+945,none,none,1,none,SPIKE2,353,none,195,none,serum,rhesus macaque
+899,none,none,56,none,SPIKE1,353,none,196,none,serum,rhesus macaque
+947,none,none,56,none,SPIKE2,353,none,196,none,serum,rhesus macaque
+901,none,none,1,none,SPIKE1,354,none,197,none,serum,rhesus macaque
+948,none,none,1,none,SPIKE2,354,none,197,none,serum,rhesus macaque
+902,none,none,56,none,SPIKE1,354,none,198,none,serum,rhesus macaque
+950,none,none,56,none,SPIKE2,354,none,198,none,serum,rhesus macaque
+904,none,none,1,none,SPIKE1,355,none,199,none,serum,rhesus macaque
+953,none,none,1,none,SPIKE2,355,none,199,none,serum,rhesus macaque
+907,none,none,56,none,SPIKE1,355,none,200,none,serum,rhesus macaque
+954,none,none,56,none,SPIKE2,355,none,200,none,serum,rhesus macaque
+908,none,none,1,none,SPIKE1,356,none,201,none,serum,rhesus macaque
+956,none,none,1,none,SPIKE2,356,none,201,none,serum,rhesus macaque
+910,none,none,56,none,SPIKE1,356,none,202,none,serum,rhesus macaque
+958,none,none,56,none,SPIKE2,356,none,202,none,serum,rhesus macaque
+913,none,none,1,none,SPIKE1,357,none,203,none,serum,rhesus macaque
+960,none,none,1,none,SPIKE2,357,none,203,none,serum,rhesus macaque
+915,none,none,56,none,SPIKE1,357,none,204,none,serum,rhesus macaque
+963,none,none,56,none,SPIKE2,357,none,204,none,serum,rhesus macaque
+916,none,none,1,none,SPIKE1,358,none,205,none,serum,rhesus macaque
+964,none,none,1,none,SPIKE2,358,none,205,none,serum,rhesus macaque
+918,none,none,56,none,SPIKE1,358,none,206,none,serum,rhesus macaque
+966,none,none,56,none,SPIKE2,358,none,206,none,serum,rhesus macaque
+920,none,none,1,none,SPIKE1,359,none,207,none,serum,rhesus macaque
+968,none,none,1,none,SPIKE2,359,none,207,none,serum,rhesus macaque
+923,none,none,56,none,SPIKE1,359,none,208,none,serum,rhesus macaque
+971,none,none,56,none,SPIKE2,359,none,208,none,serum,rhesus macaque
+701,Moderna,18-55y,none,36,SPIKE1,M24,vaccinated,254,Vaccinated - (No prior infection),serum,human
+799,Moderna,18-55y,none,36,SPIKE2,M24,vaccinated,254,Vaccinated - (No prior infection),serum,human
+703,Moderna,18-55y,none,36,SPIKE1,M16,vaccinated,256,Vaccinated - (No prior infection),serum,human
+801,Moderna,18-55y,none,36,SPIKE2,M16,vaccinated,256,Vaccinated - (No prior infection),serum,human
+707,Moderna,18-55y,none,36,SPIKE1,M26,vaccinated,260,Vaccinated - (No prior infection),serum,human
+805,Moderna,18-55y,none,36,SPIKE2,M26,vaccinated,260,Vaccinated - (No prior infection),serum,human
+709,Moderna,18-55y,none,36,SPIKE1,M17,vaccinated,262,Vaccinated - (No prior infection),serum,human
+807,Moderna,18-55y,none,36,SPIKE2,M17,vaccinated,262,Vaccinated - (No prior infection),serum,human
+713,Moderna,18-55y,none,36,SPIKE1,M28,vaccinated,266,Vaccinated - (No prior infection),serum,human
+811,Moderna,18-55y,none,36,SPIKE2,M28,vaccinated,266,Vaccinated - (No prior infection),serum,human
+715,Moderna,18-55y,none,36,SPIKE1,M20,vaccinated,268,Vaccinated - (No prior infection),serum,human
+813,Moderna,18-55y,none,36,SPIKE2,M20,vaccinated,268,Vaccinated - (No prior infection),serum,human
+719,Moderna,18-55y,none,36,SPIKE1,M30,vaccinated,272,Vaccinated - (No prior infection),serum,human
+817,Moderna,18-55y,none,36,SPIKE2,M30,vaccinated,272,Vaccinated - (No prior infection),serum,human
+721,Moderna,18-55y,none,36,SPIKE1,M21,vaccinated,274,Vaccinated - (No prior infection),serum,human
+819,Moderna,18-55y,none,36,SPIKE2,M21,vaccinated,274,Vaccinated - (No prior infection),serum,human
+725,Moderna,18-55y,none,36,SPIKE1,M32,vaccinated,278,Vaccinated - (No prior infection),serum,human
+823,Moderna,18-55y,none,36,SPIKE2,M32,vaccinated,278,Vaccinated - (No prior infection),serum,human
+729,Moderna,18-55y,none,36,SPIKE1,M18,vaccinated,282,Vaccinated - (No prior infection),serum,human
+827,Moderna,18-55y,none,36,SPIKE2,M18,vaccinated,282,Vaccinated - (No prior infection),serum,human
+731,Moderna,18-55y,none,36,SPIKE1,M19,vaccinated,284,Vaccinated - (No prior infection),serum,human
+829,Moderna,18-55y,none,36,SPIKE2,M19,vaccinated,284,Vaccinated - (No prior infection),serum,human
+733,Moderna,18-55y,none,36,SPIKE1,M34,vaccinated,286,Vaccinated - (No prior infection),serum,human
+831,Moderna,18-55y,none,36,SPIKE2,M34,vaccinated,286,Vaccinated - (No prior infection),serum,human
+737,Moderna,18-55y,none,36,SPIKE1,M22,vaccinated,290,Vaccinated - (No prior infection),serum,human
+835,Moderna,18-55y,none,36,SPIKE2,M22,vaccinated,290,Vaccinated - (No prior infection),serum,human
+743,Moderna,18-55y,none,36,SPIKE1,M38,vaccinated,296,Vaccinated - (No prior infection),serum,human
+841,Moderna,18-55y,none,36,SPIKE2,M38,vaccinated,296,Vaccinated - (No prior infection),serum,human
+747,Moderna,18-55y,none,36,SPIKE1,M23,vaccinated,300,Vaccinated - (No prior infection),serum,human
+845,Moderna,18-55y,none,36,SPIKE2,M23,vaccinated,300,Vaccinated - (No prior infection),serum,human
+315,none,47,72,none,SPIKE1,1,none,49,Non-Hospitalized Serum,ACD plasma,human
+201,none,47,72,none,SPIKE2,1,none,49,Non-Hospitalized Serum,ACD plasma,human
+318,none,48,63,none,SPIKE1,5,none,51,Non-Hospitalized Serum,ACD plasma,human
+206,none,48,63,none,SPIKE2,5,none,51,Non-Hospitalized Serum,ACD plasma,human
+320,none,43,60,none,SPIKE1,2,none,52,Non-Hospitalized Serum,ACD plasma,human
+208,none,43,60,none,SPIKE2,2,none,52,Non-Hospitalized Serum,ACD plasma,human
+334,none,31,67,none,SPIKE1,8,none,59,Non-Hospitalized Serum,ACD plasma,human
+223,none,31,67,none,SPIKE2,8,none,59,Non-Hospitalized Serum,ACD plasma,human
+151,none,28,67,none,SPIKE1,10,none,65,Non-Hospitalized Serum,ACD plasma,human
+235,none,28,67,none,SPIKE2,10,none,65,Non-Hospitalized Serum,ACD plasma,human
+349,none,29,67,none,SPIKE1,4,none,66,Non-Hospitalized Serum,ACD plasma,human
+237,none,29,67,none,SPIKE2,4,none,66,Non-Hospitalized Serum,ACD plasma,human
+355,none,30,62,none,SPIKE1,11,none,69,Non-Hospitalized Serum,ACD plasma,human
+243,none,30,62,none,SPIKE2,11,none,69,Non-Hospitalized Serum,ACD plasma,human
+358,none,36,58,none,SPIKE1,12,none,71,Non-Hospitalized Serum,ACD plasma,human
+247,none,36,58,none,SPIKE2,12,none,71,Non-Hospitalized Serum,ACD plasma,human
+371,none,52,77,none,SPIKE1,15,none,77,Non-Hospitalized Serum,ACD plasma,human
+259,none,52,77,none,SPIKE2,15,none,77,Non-Hospitalized Serum,ACD plasma,human
+374,none,52,69,none,SPIKE1,16,none,79,Non-Hospitalized Serum,ACD plasma,human
+263,none,52,69,none,SPIKE2,16,none,79,Non-Hospitalized Serum,ACD plasma,human
+378,none,36,57,none,SPIKE1,17,none,81,Non-Hospitalized Serum,ACD plasma,human
+267,none,36,57,none,SPIKE2,17,none,81,Non-Hospitalized Serum,ACD plasma,human
+186,none,29,73,none,SPIKE1,18,none,83,Non-Hospitalized Serum,ACD plasma,human
+271,none,29,73,none,SPIKE2,18,none,83,Non-Hospitalized Serum,ACD plasma,human
