@@ -1,0 +1,1093 @@
+---
+title: "Phage_DMS_NHP_study"
+output: html_document
+editor_options: 
+chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This file contains the code to make manuscript figures with SPIKE2 data. To make SPIKE1 versions, replace all instances of "SPIKE2" with "SPIKE1" in this file.
+
+Load packages
+```{r}
+library(dplyr)
+library(tidyverse)
+library(cowplot)
+library(reshape2)
+library(ggseqlogo)
+library(ggpubr)
+```
+
+Import data
+```{r}
+counts <- read.csv("../data/phage-dms-nhp_counts.csv")
+enrichment <- read.csv("../data/phage-dms-nhp_enrichment.csv")
+peptide_table <- read.csv("../data/phage-dms-nhp_peptide_table.csv")
+sample_table <- read.csv("../data/phage-dms-nhp_sample_table.csv")
+enr_diff_sel_1 <- read.csv("../data/phage-dms-nhp_smooth_flank_1_enr_diff_sel.csv")
+```
+
+Make sample table with just SPIKE2
+```{r}
+sample_table_SPIKE2 <- sample_table %>% filter(library_batch == "SPIKE2")
+```
+
+Make data long and merge sample info, enrichment, and diff_sel
+```{r}
+enrichment_long <- enrichment %>% pivot_longer(-peptide_id, names_to="sample_id", values_to="enrichment")
+enrichment_long$sample_id<-gsub("X","",as.character(enrichment_long$sample_id))
+enr_diff_sel_1_long <- enr_diff_sel_1 %>% pivot_longer(-peptide_id, names_to="sample_id", values_to="enr_diff_sel_1")
+enr_diff_sel_1_long$sample_id<-gsub("X","",as.character(enr_diff_sel_1_long$sample_id))
+
+diff_sel_and_enrich <- left_join(enr_diff_sel_1_long,enrichment_long, by=c("sample_id", "peptide_id"))
+
+sample_table_SPIKE2$sample_id <- as.character(sample_table_SPIKE2$sample_id)
+main_SPIKE2 <- right_join(diff_sel_and_enrich, sample_table_SPIKE2)
+
+main_SPIKE2 <- left_join(main_SPIKE2, peptide_table)
+```
+
+```{r}
+#Sample ID as factor
+main_SPIKE2$sample_ID <- as.factor(main_SPIKE2$sample_ID)
+
+#Make groups for plotting
+main_SPIKE2 <- main_SPIKE2 %>% mutate(plot_group_num = case_when(days_post_vaccination == "6 weeks (cov)" ~ 1, Vaccine == "Moderna" ~ 2, sample_ID %in% c("186", "188", "190", "192", "194", "196", "198", "200", "202", "204", "206", "208") ~ 3, sample_ID %in% c("49", "51", "52", "59", "65", "66", "69", "71", "77", "79", "81", "83") ~ 4, days_post_vaccination == "12 weeks (hbv)" ~ 5, days_post_infection == "0" | days_post_infection == "1" ~ 6, TRUE ~ 0))
+
+main_SPIKE2 <- main_SPIKE2 %>% mutate(plot_group = case_when(days_post_vaccination == "6 weeks (cov)" ~ "Vaccinated pigtail macaques", Vaccine == "Moderna" ~ "Vaccinated humans", sample_ID %in% c("186", "188", "190", "192", "194", "196", "198", "200", "202", "204", "206", "208") ~ "Convalescent rhesus macaques", sample_ID %in% c("49", "51", "52", "59", "65", "66", "69", "71", "77", "79", "81", "83") ~ "Convalescent humans", days_post_vaccination == "12 weeks (hbv)" ~ "Baseline pigtail macaques", days_post_infection == "0" | days_post_infection == "1" ~ "Baseline rhesus macaques", TRUE ~ "none"))
+
+main_SPIKE2$plot_group <- factor(main_SPIKE2$plot_group, levels = c("Baseline pigtail macaques", "Vaccinated pigtail macaques", "Vaccinated humans", "Baseline rhesus macaques", "Convalescent rhesus macaques", "Convalescent humans"))
+
+main_SPIKE2 <- main_SPIKE2 %>% mutate(depletion_status = case_when(sample_ID %in% c("203", "204", "205", "206", "207", "208") ~ "CD4/CD8 depleted", sample_ID %in% c("197", "198", "199", "200", "201", "202") ~ "CD8 depleted", sample_ID %in% c("191", "192", "193", "194", "195", "196") ~ "CD4 depleted", sample_ID %in% c("185", "186", "187", "188", "189", "190") ~ "control", TRUE ~ "none"))
+
+main_SPIKE2$aa_sub <- factor(main_SPIKE2$aa_sub, levels = c("G", "P", "A", "I", "L", "V", "F", "W", "M", "Y", "C", "S", "T", "N", "Q", "H", "K", "R", "D", "E"))
+```
+
+Generates Fig 1A with SPIKE2 data
+```{r}
+main_SPIKE2 <- main_SPIKE2 %>% mutate(enrichment_ceiling = case_when(enrichment >= 20 ~ 20, enrichment < 20 ~ enrichment, TRUE ~ 0))
+
+plot_data <- main_SPIKE2 %>%
+    filter(is_wt == "True") %>%
+  filter(plot_group_num != 5 & plot_group_num != 6)
+
+plot <- ggplot(plot_data, aes(x=Loc, y=fct_reorder(participant_ID,plot_group_num,min,.desc=TRUE), fill=enrichment_ceiling)) + 
+  geom_tile() +
+ labs(x="Peptide location on SARS-CoV-2 Spike", y="", fill = "Enrichment") +
+  theme_bw()+
+ theme(panel.grid.major = element_blank(), strip.text.x = element_text(face="bold", size = 10), panel.grid.minor = element_blank()) +
+  scale_fill_continuous(low="white",high="red",na.value = 'transparent') +
+  scale_x_continuous(breaks=c(100,200,300,400,500,600,700,800,900,1000,1100,1200,1300), expand = c(0, 0)) +
+  theme(axis.text.x=element_text(size=rel(1.4)),axis.title.x=element_text(size=rel(1.2)))+
+  geom_segment(aes(x=1,y=54.5,xend=1212,yend=54.5))+
+  annotate("rect", xmin=29, xmax=294, ymin=53.5, ymax=55.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=332, xmax=523, ymin=53.5, ymax=55.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=530, xmax=681, ymin=53.5, ymax=55.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=816, xmax=833, ymin=53.5, ymax=55.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=910, xmax=987, ymin=53.5, ymax=55.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=1162, xmax=1204, ymin=53.5, ymax=55.5, colour="grey",fill="grey")+
+  geom_segment(aes(x=686, y=61.5, xend=686, yend=59.5), arrow=arrow(length=unit(0.2, "cm")))+
+  geom_segment(aes(x=815, y=61.5, xend=815, yend=59.5), arrow=arrow(length=unit(0.2, "cm")))+
+    annotate("text", x=686, y=62.5, label="S1/S2", fontface=2)+
+  annotate("text", x=815, y=62.5, label="S2'", fontface=2)+
+   geom_segment(aes(x=1, y=58, xend=684, yend=58))+
+   geom_segment(aes(x=687, y=58, xend=1212, yend=58))+
+    geom_segment(aes(x=0, y=58, xend=0, yend=57))+
+  geom_segment(aes(x=684, y=58, xend=684, yend=57))+
+  geom_segment(aes(x=687, y=58, xend=687, yend=57))+
+  geom_segment(aes(x=1211, y=58, xend=1211, yend=57))+
+    annotate("text", x=342.5, y=59.5, label="S1", size=5)+
+    annotate("text", x=949, y=59.5, label="S2", size=5)+
+  annotate("text", x=161.5, y=56.5, label="NTD", hjust=0.5)+
+  annotate("text", x=427.5, y=56.5, label="RBD", hjust=0.5)+
+  annotate("text", x=605.5, y=56.5, label="CTD", hjust=0.5)+
+  annotate("text", x=824.5, y=56.5, label="FP", hjust=0.5)+
+  annotate("text", x=948.5, y=56.5, label="HR1", hjust=0.5)+
+  annotate("text", x=1183, y=56.5, label="HR2", hjust=0.5)+
+  annotate("rect", xmin=285, xmax=305, ymin=53, ymax=54.2, colour="black", fill="red")+
+   annotate("text", x=295, y=52, label="NTD", hjust=0.5)+
+  annotate("rect", xmin=526, xmax=593.5, ymin=53, ymax=54.2, colour="black", fill="springgreen4")+
+  annotate("text", x=560, y=52, label="CTD-N'", hjust=0.5)+
+  annotate("rect", xmin=593.5, xmax=685.5, ymin=53, ymax=54.2, colour="black", fill="cyan")+
+  annotate("text", x=640, y=52, label="CTD-C'", hjust=0.5)+
+  annotate("rect", xmin=777, xmax=804.5, ymin=53, ymax=54.2, colour="black", fill="magenta")+
+  annotate("text", x=767, y=52, label="pre-FP", hjust=0.5)+
+  annotate("rect", xmin=804.5, xmax=835.5, ymin=53, ymax=54.2, colour="black", fill="black")+
+  annotate("text", x=820, y=52, label="FP", hjust=0.5)+
+  annotate("rect", xmin=835.5, xmax=855, ymin=53, ymax=54.2, colour="black", fill="grey39")+
+  annotate("text", x=878, y=52, label="post-FP", hjust=0.5)+
+  annotate("rect", xmin=1135, xmax=1170.5, ymin=53, ymax=54.2, colour="black", fill="mediumorchid4")+
+  annotate("text", x=1142, y=52, label="SH-H", hjust=0.5)+
+  annotate("rect", xmin=1170.5, xmax=1204, ymin=53, ymax=54.2, colour="black", fill="blue2")+
+  annotate("text", x=1198, y=52, label="HR2", hjust=0.5)+
+  annotate("text", x=-150, y=6.5, label = "Convalescent\nhumans", size=5)+
+  annotate("text", x=-150, y=18.5, label = "Convalescent\nmacaques", size=5)+
+  annotate("text", x=-150, y=32, label = "Vaccinated\nhumans", size=5)+
+  annotate("text", x=-150, y=45, label = "Vaccinated\nmacaques", size=5)+
+  geom_vline(xintercept = 284.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 305.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 525.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 593.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 685.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 776.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 804.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 835.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 855.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 1134.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 1170.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 1204.5, colour="black", linetype="dotted", size=0.5)+
+  geom_hline(yintercept=12.5, colour="black")+
+  geom_hline(yintercept=24.5, colour="black")+
+  geom_hline(yintercept=39.5, colour="black")+
+  coord_cartesian(ylim=c(1,50), xlim=c(0,1212),clip='off')+
+  theme(plot.margin=unit(c(5,2,2,5), "cm")) 
+    ggsave("Figure_1A.jpg", width=14, height=9,dpi=300)
+
+```
+
+
+Generates Fig S1A with SPIKE2 data
+```{r}
+dir.create("zoomed_in_CTD/")
+
+temp_plot1 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 1) %>%
+    filter(Loc %in% 526:685) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  xlab("") +
+  ylab("WT enrichment") +
+    geom_vline(xintercept = 593.5) +
+  scale_x_continuous(breaks = seq(526,685, by = 10), expand = c(0.02,0.02)) +
+  ggtitle("Vaccinated pigtail macaques")
+dir <- "zoomed_in_CTD/"
+plot_name <- paste(dir, "zoomed_in_CTD_group1.jpg", sep = "")
+ggsave(plot_name, temp_plot1, width = 30, height = 7)
+
+temp_plot2 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 2) %>%
+   filter(Loc %in% 526:685) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  xlab("") +
+  ylab("WT enrichment") +
+  ggtitle("Vaccinated humans")+
+    geom_vline(xintercept = 593.5) +
+  scale_x_continuous(breaks = seq(526,685, by = 10), expand = c(0.02,0.02)) 
+dir <- "zoomed_in_CTD/"
+plot_name <- paste(dir, "zoomed_in_CTD_group2.jpg", sep = "")
+ggsave(plot_name, temp_plot2, width = 30, height = 7)
+
+temp_plot3 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 3) %>%
+    filter(Loc %in% 526:685) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  xlab("") +
+  ylab("WT enrichment") +
+   ggtitle("Convalescent rhesus macaques")+
+    geom_vline(xintercept = 593.5) +
+  scale_x_continuous(breaks = seq(526,685, by = 10), expand = c(0.02,0.02)) 
+dir <- "zoomed_in_CTD/"
+plot_name <- paste(dir, "zoomed_in_CTD_group3.jpg", sep = "")
+ggsave(plot_name, temp_plot3, width = 30, height = 7)
+
+temp_plot4 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 4) %>%
+   filter(Loc %in% 526:685) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+    geom_vline(xintercept = 593.5) +
+  xlab("") +
+  ylab("WT enrichment") +
+  ggtitle("Convalescent humans") +
+    annotate("text", x=559.5, y=-8, label = "CTD-N'", size=12)+
+   annotate("text", x=639.5, y=-8, label = "CTD-C'", size=12)+
+  scale_x_continuous(breaks = seq(526,685, by = 10), expand = c(0.02,0.02))+
+  coord_cartesian(ylim=c(0,25), xlim=c(526,685),clip='off')
+dir <- "zoomed_in_CTD/"
+plot_name <- paste(dir, "zoomed_in_CTD_group4.jpg", sep = "")
+ggsave(plot_name, temp_plot4, width = 30, height = 7)
+
+merge_zoomed_in_CTD <- plot_grid(temp_plot1, temp_plot2, temp_plot3, temp_plot4, nrow = 4, align= "v", axis="rlbt")
+plot_name <- paste("Figure_S1A.jpg", sep = "")
+ggsave(plot_name, merge_zoomed_in_CTD, width = 24, height = 20)
+```
+
+
+Generates Fig S1B with SPIKE2 data
+```{r}
+dir.create("zoomed_in_FP/")
+
+temp_plot1 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 1) %>%
+    filter(Loc %in% 777:855) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+    geom_vline(xintercept = 804.5) +
+    geom_vline(xintercept = 835.5) +
+  xlab("") +
+  ylab("WT enrichment") +
+  scale_x_continuous(breaks = seq(777,855, by = 10), expand = c(0.02,0.02)) +
+  ggtitle("Vaccinated pigtail macaques")
+dir <- "zoomed_in_FP/"
+plot_name <- paste(dir, "zoomed_in_FP_group1.jpg", sep = "")
+ggsave(plot_name, temp_plot1, width = 20, height = 7)
+
+temp_plot2 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 2) %>%
+    filter(Loc %in% 777:855) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  geom_vline(xintercept = 804.5) +
+    geom_vline(xintercept = 835.5) +
+  xlab("") +
+  ylab("WT enrichment") +
+  ggtitle("Vaccinated humans")+
+  scale_x_continuous(breaks = seq(777,855, by = 10), expand = c(0.02,0.02))
+dir <- "zoomed_in_FP/"
+plot_name <- paste(dir, "zoomed_in_FP_group2.jpg", sep = "")
+ggsave(plot_name, temp_plot2, width = 20, height = 7)
+
+temp_plot3 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 3) %>%
+    filter(Loc %in% 777:855) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  geom_vline(xintercept = 804.5) +
+    geom_vline(xintercept = 835.5) +
+  xlab("") +
+  ylab("WT enrichment") +
+   ggtitle("Convalescent rhesus macaques")+
+  scale_x_continuous(breaks = seq(777,855, by = 10), expand = c(0.02,0.02))
+dir <- "zoomed_in_FP/"
+plot_name <- paste(dir, "zoomed_in_FP_group3.jpg", sep = "")
+ggsave(plot_name, temp_plot3, width = 20, height = 7)
+
+temp_plot4 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 4) %>%
+    filter(Loc %in% 777:855) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  geom_vline(xintercept = 804.5) +
+    geom_vline(xintercept = 835.5) +
+  xlab("") +
+  ylab("WT enrichment") +
+  ggtitle("Convalescent humans")+
+     annotate("text", x=791.5, y=-27, label = "pre-FP", size=12)+
+   annotate("text", x=820, y=-27, label = "FP", size=12)+
+   annotate("text", x=844.5, y=-27, label = "post-FP", size=12)+
+  scale_x_continuous(breaks = seq(777,855, by = 10), expand = c(0.02,0.02))+
+  coord_cartesian(ylim=c(0,90), xlim=c(777,855),clip='off')
+dir <- "zoomed_in_FP/"
+plot_name <- paste(dir, "zoomed_in_FP_group4.jpg", sep = "")
+ggsave(plot_name, temp_plot4, width = 20, height = 7)
+
+merge_zoomed_in_FP <- plot_grid(temp_plot1, temp_plot2, temp_plot3, temp_plot4, nrow = 4, align= "v", axis="rlbt")
+plot_name <- paste("Figure_S1B.jpg", sep = "")
+ggsave(plot_name, merge_zoomed_in_FP, width = 16, height = 20)
+```
+
+
+Generates Fig S1C with SPIKE2 data
+```{r}
+dir.create("zoomed_in_SH_HR2")
+
+temp_plot1 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 1) %>%
+    filter(Loc %in% 1135:1204) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  xlab("") +
+  ylab("WT enrichment") +
+  geom_vline(xintercept = 1170.5) +
+  scale_x_continuous(breaks = seq(1135,1204, by = 10), expand = c(0.02,0.02)) +
+  ggtitle("Vaccinated pigtail macaques")
+dir <- "zoomed_in_SH_HR2/"
+plot_name <- paste(dir, "zoomed_in_SH_HR2_group1.jpg", sep = "")
+ggsave(plot_name, temp_plot1, width = 15, height = 7)
+
+temp_plot2 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 2) %>%
+  filter(Loc %in% 1135:1204) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  xlab("") +
+  ylab("WT enrichment") +
+  ggtitle("Vaccinated humans")+
+  geom_vline(xintercept = 1170.5) +
+  scale_x_continuous(breaks = seq(1135,1204, by = 10), expand = c(0.02,0.02))
+dir <- "zoomed_in_SH_HR2/"
+plot_name <- paste(dir, "zoomed_in_SH_HR2_group2.jpg", sep = "")
+
+ggsave(plot_name, temp_plot2, width = 15, height = 7)
+
+temp_plot3 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 3) %>%
+   filter(Loc %in% 1135:1204) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+  xlab("") +
+  ylab("WT enrichment") +
+   ggtitle("Convalescent rhesus macaques")+
+ geom_vline(xintercept = 1170.5) +
+  scale_x_continuous(breaks = seq(1135,1204, by = 10), expand = c(0.02,0.02))
+dir <- "zoomed_in_SH_HR2/"
+plot_name <- paste(dir, "zoomed_in_SH_HR2_group3.jpg", sep = "")
+ggsave(plot_name, temp_plot3, width = 15, height = 7)
+
+temp_plot4 <- main_SPIKE2 %>% 
+  filter(plot_group_num == 4) %>%
+   filter(Loc %in% 1135:1204) %>% 
+  filter(is_wt == "True") %>%
+  ggplot( aes(x=Loc, y=enrichment, color=sample_ID)) + 
+    geom_line(alpha=0.8) + 
+    theme_classic(base_size = 20) +
+    theme(legend.position = "none",strip.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1), plot.title = element_text(size=35), axis.title=element_text(size=30), axis.text=element_text(size=25)) +
+ geom_vline(xintercept = 1170.5) +
+  xlab("") +
+  ylab("WT enrichment") +
+  ggtitle("Convalescent humans") +
+    annotate("text", x=1152.5, y=-8, label = "SH-H", size=12)+
+   annotate("text", x=1187, y=-8, label = "HR2", size=12)+
+    scale_x_continuous(breaks = seq(1135,1204, by = 10), expand = c(0.02,0.02)) +
+  coord_cartesian(ylim=c(0,25), xlim=c(1135,1204),clip='off')
+dir <- "zoomed_in_SH_HR2/"
+plot_name <- paste(dir, "zoomed_in_SH_HR2_group4.jpg", sep = "")
+ggsave(plot_name, temp_plot4, width = 15, height = 7)
+
+merge_zoomed_in_SH_HR2 <- plot_grid(temp_plot1, temp_plot2, temp_plot3, temp_plot4, nrow = 4, align= "v", axis="rlbt")
+plot_name <- paste("Figure_S1C.jpg", sep = "")
+ggsave(plot_name, merge_zoomed_in_SH_HR2, width = 12, height = 20)
+```
+
+
+Generates Fig S2 with SPIKE2 data
+```{r}
+#need to make new variable to order these correctly
+main_SPIKE2 <- main_SPIKE2 %>% mutate(baseline_plot_group = case_when(plot_group_num==5 ~ 1, plot_group_num==1 ~ 2, plot_group_num==6 ~ 3, plot_group_num==3 ~ 4, TRUE ~ 0))
+
+plot_data <- main_SPIKE2 %>%
+  filter(is_wt == "True") %>%
+  filter(plot_group_num != 2 & plot_group_num != 4)
+
+#need to make unique participant IDs so this is plotted correctly
+plot_data <- plot_data %>% mutate(participant_ID= case_when(plot_group_num == 1 ~ participant_ID, plot_group_num==3 ~ participant_ID, plot_group_num==5 ~ paste("pre_", participant_ID, sep=""), plot_group_num==6 ~ paste("pre_", participant_ID, sep="")))
+
+plot <- ggplot(plot_data, aes(x=Loc, y=fct_reorder(participant_ID,baseline_plot_group,min,.desc=TRUE), fill=enrichment_ceiling)) + 
+  geom_tile() +
+ labs(x="Peptide location on SARS-CoV-2 Spike", y="", fill = "Enrichment") +
+  theme_bw()+
+ theme(panel.grid.major = element_blank(), strip.text.x = element_text(face="bold", size = 10), panel.grid.minor = element_blank()) +
+  theme(axis.text.x=element_text(size=rel(1.4)),axis.title.x=element_text(size=rel(1.2)))+
+  scale_fill_continuous(low="white",high="red",na.value = 'transparent') +
+  scale_x_continuous(breaks=c(100,200,300,400,500,600,700,800,900,1000,1100,1200,1300), expand = c(0, 0))+
+  geom_segment(aes(x=1,y=44.5,xend=1212,yend=44.5))+
+  annotate("rect", xmin=29, xmax=294, ymin=43.5, ymax=45.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=332, xmax=523, ymin=43.5, ymax=45.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=530, xmax=681, ymin=43.5, ymax=45.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=816, xmax=833, ymin=43.5, ymax=45.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=910, xmax=987, ymin=43.5, ymax=45.5, colour="grey",fill="grey")+
+  annotate("rect", xmin=1162, xmax=1204, ymin=43.5, ymax=45.5, colour="grey",fill="grey")+
+  geom_segment(aes(x=686, y=51.5, xend=686, yend=49.5), arrow=arrow(length=unit(0.2, "cm")))+
+  geom_segment(aes(x=815, y=51.5, xend=815, yend=49.5), arrow=arrow(length=unit(0.2, "cm")))+
+  annotate("text", x=686, y=52.5, label="S1/S2", fontface=2)+
+  annotate("text", x=815, y=52.5, label="S2'", fontface=2)+
+  geom_segment(aes(x=1, y=48, xend=684, yend=48))+
+  geom_segment(aes(x=687, y=48, xend=1212, yend=48))+
+  geom_segment(aes(x=0, y=48, xend=0, yend=47))+
+  geom_segment(aes(x=684, y=48, xend=684, yend=47))+
+  geom_segment(aes(x=687, y=48, xend=687, yend=47))+
+  geom_segment(aes(x=1211, y=48, xend=1211, yend=47))+
+  annotate("text", x=342.5, y=49.5, label="S1", size=5)+
+  annotate("text", x=949, y=49.5, label="S2", size=5)+
+  annotate("text", x=161.5, y=46.5, label="NTD", hjust=0.5)+
+  annotate("text", x=427.5, y=46.5, label="RBD", hjust=0.5)+
+  annotate("text", x=605.5, y=46.5, label="CTD", hjust=0.5)+
+  annotate("text", x=824.5, y=46.5, label="FP", hjust=0.5)+
+  annotate("text", x=948.5, y=46.5, label="HR1", hjust=0.5)+
+  annotate("text", x=1183, y=46.5, label="HR2", hjust=0.5)+
+  annotate("rect", xmin=285, xmax=305, ymin=43, ymax=44.2, colour="black", fill="red")+
+  annotate("text", x=295, y=42, label="NTD", hjust=0.5)+
+  annotate("rect", xmin=526, xmax=593.5, ymin=43, ymax=44.2, colour="black", fill="springgreen4")+
+  annotate("text", x=560, y=42, label="CTD-N'", hjust=0.5)+
+  annotate("rect", xmin=593.5, xmax=685.5, ymin=43, ymax=44.2, colour="black", fill="cyan")+
+  annotate("text", x=640, y=42, label="CTD-C'", hjust=0.5)+
+  annotate("rect", xmin=777, xmax=804.5, ymin=43, ymax=44.2, colour="black", fill="magenta")+
+  annotate("text", x=767, y=42, label="pre-FP", hjust=0.5)+
+  annotate("rect", xmin=804.5, xmax=835.5, ymin=43, ymax=44.2, colour="black", fill="black")+
+  annotate("text", x=820, y=42, label="FP", hjust=0.5)+
+  annotate("rect", xmin=835.5, xmax=855, ymin=43, ymax=44.2, colour="black", fill="grey39")+
+  annotate("text", x=878, y=42, label="post-FP", hjust=0.5)+
+  annotate("rect", xmin=1135, xmax=1170.5, ymin=43, ymax=44.2, colour="black", fill="mediumorchid4")+
+  annotate("text", x=1142, y=42, label="SH-H", hjust=0.5)+
+  annotate("rect", xmin=1170.5, xmax=1204, ymin=43, ymax=44.2, colour="black", fill="blue2")+
+  annotate("text", x=1198, y=42, label="HR2", hjust=0.5)+
+  geom_vline(xintercept = 284.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 305.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 525.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 593.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 685.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 776.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 804.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 835.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 855.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 1134.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 1170.5, colour="black", linetype="dotted", size=0.5)+
+  geom_vline(xintercept = 1204.5, colour="black", linetype="dotted", size=0.5)+
+  annotate("text", x=-240, y=6.5, label = "Convalescent\nrhesus macaques", size=5)+
+  annotate("text", x=-240, y=18.5, label = "Baseline\nrhesus macaques", size=5)+
+  annotate("text", x=-240, y=29.5, label = "Vaccinated\npigtail macaques", size=5)+
+  annotate("text", x=-240, y=38, label = "Baseline\npigtail macaques", size=5)+
+  geom_hline(yintercept=12.5, colour="black")+
+  geom_hline(yintercept=24.5, colour="black")+
+  geom_hline(yintercept=35.5, colour="black")+
+  coord_cartesian(ylim=c(1,40), xlim=c(0,1212),clip='off')+
+  theme(plot.margin=unit(c(6,2,2,6), "cm"))
+  ggsave("Figure_S2.jpg", width=14, height=9,dpi=300)
+```
+
+
+Generates a data file to make Figure 2 and Figure S9 in Prism (SPIKE2)
+```{r}
+main_SPIKE2 <- main_SPIKE2 %>% mutate(region = case_when(Loc %in% 285:305 ~ "NTD", Loc %in% 526:593 ~ "CTD-N'", Loc %in% 594:685 ~ "CTD-C'", Loc %in% 777:804 ~ "pre-FP", Loc %in% 805:835 ~ "FP", Loc %in% 836:855 ~ "post-FP", Loc %in% 1135:1170 ~ "SH-H", Loc %in% 1171:1204 ~ "HR2", TRUE ~ "NA"))
+
+box_plots_SPIKE2 <- main_SPIKE2 %>%
+  filter(is_wt == "True") %>%
+  filter(region != "NA") %>%
+  filter(plot_group_num != 5 & plot_group_num != 6) %>%
+  group_by(sample_ID, region) %>% summarise_at(vars(enrichment),
+               list(summed_enrichment_region = sum))
+box_plots_SPIKE2 <- left_join(box_plots_SPIKE2, main_SPIKE2[, c("sample_ID", "plot_group")])
+box_plots_SPIKE2 <- box_plots_SPIKE2[!duplicated(box_plots_SPIKE2$summed_enrichment_region),]
+
+#plot and do stats in Prism
+write.csv(box_plots_SPIKE2,"box_plots_SPIKE2.csv")
+```
+
+
+Generates a data file to make Figure S3 in Prism (SPIKE2)
+```{r}
+main_SPIKE2 <- main_SPIKE2 %>% mutate(region = case_when(Loc %in% 285:305 ~ "NTD", Loc %in% 526:593 ~ "CTD-N'", Loc %in% 594:685 ~ "CTD-C'", Loc %in% 777:804 ~ "pre-FP", Loc %in% 805:835 ~ "FP", Loc %in% 836:855 ~ "post-FP", Loc %in% 1135:1170 ~ "SH-H", Loc %in% 1171:1204 ~ "HR2", TRUE ~ "NA"))
+
+box_plots_SPIKE2 <- main_SPIKE2 %>%
+  filter(is_wt == "True") %>%
+  filter(region != "NA") %>%
+  filter(plot_group == "Vaccinated pigtail macaques") %>%
+  group_by(sample_ID, region) %>% summarise_at(vars(enrichment),
+               list(summed_enrichment_region = sum))
+box_plots_SPIKE2 <- left_join(box_plots_SPIKE2, main_SPIKE2[, c("sample_ID", "Vaccine")])
+box_plots_SPIKE2 <- box_plots_SPIKE2[!duplicated(box_plots_SPIKE2$summed_enrichment_region),]
+
+write.csv(box_plots_SPIKE2,"box_plots_SPIKE2_pigtail_subgroups.csv")
+
+box_plots_SPIKE2 <- main_SPIKE2 %>%
+  filter(is_wt == "True") %>%
+  filter(region != "NA") %>%
+  filter(plot_group == "Convalescent rhesus macaques") %>%
+  group_by(sample_ID, region) %>% summarise_at(vars(enrichment),
+               list(summed_enrichment_region = sum))
+box_plots_SPIKE2 <- left_join(box_plots_SPIKE2, main_SPIKE2[, c("sample_ID", "depletion_status")])
+box_plots_SPIKE2 <- box_plots_SPIKE2[!duplicated(box_plots_SPIKE2$summed_enrichment_region),]
+
+write.csv(box_plots_SPIKE2,"box_plots_SPIKE2_rhesus_subgroups.csv")
+```
+
+
+Generates Figure 5C
+```{r}
+#Need to first create a list of matrices of diff sel data for each sample
+
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 1135:1170) %>%
+  filter(sample_ID=="274" | sample_ID=="194")
+
+#Make new variable to label each logo plot
+temp_data <- temp_data %>% mutate(participant_ID_2 = case_when(sample_ID=="274" ~ "Vaccinated\nhuman (M21)", sample_ID=="194" ~ "Convalescent\nmacaque (352)", TRUE ~ "none"))
+  
+#Create a list of participants
+participants = unique(temp_data$participant_ID_2)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+pre_vaccine_matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID_2 == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  pre_vaccine_matrices[[i]] <- matrix
+  names(pre_vaccine_matrices)[i] <- participant
+  i = i+1
+}
+
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot_pre <- ggplot() + 
+  geom_logo(pre_vaccine_matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(pre_vaccine_matrices[[1]]))) +
+    theme(plot.title = element_text(hjust = 0.5),
+      strip.text = element_text(face = "bold")) +
+    rotate_x_text(angle=90) 
+
+ggsave("Figure_5C.jpg", temp_logoplot_pre, width = 6, height = 4)
+```
+
+The below generates individual logo plots for each listed epitope region (e.g., FP) and group (e.g., vaccinated humans). These make up Figures S5-S8.
+
+FP, vaccinated humans
+```{r}
+every_nth = function(n) {
+  return(function(x) {x[c(TRUE, rep(FALSE, n - 1))]})
+}
+
+dir.create("Fig_S5_to_S8_logoplots")
+dir <- "Fig_S5_to_S8_logoplots/"
+
+#Need to first create a list of matrices of diff sel data for each sample
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 805:835) %>%
+  filter(plot_group =="Vaccinated humans")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Vaccinated humans, FP")
+
+plot_name <- paste(dir, "FP_vacc_humans.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 6, height = 30)
+```
+
+FP, convalescent macaques
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 805:835) %>%
+  filter(plot_group =="Convalescent rhesus macaques")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Convalescent rhesus\nmacaques, FP")
+
+plot_name <- paste(dir, "FP_conv_macaques.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 6, height = 24)
+```
+
+FP, convalescent humans
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 805:835) %>%
+  filter(plot_group =="Convalescent humans")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Convalescent humans, FP")
+
+plot_name <- paste(dir, "FP_conv_humans.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 6, height = 24)
+```
+
+CTD-N', vaccinated macaques
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 526:593) %>%
+  filter(plot_group =="Vaccinated pigtail macaques")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Vaccinated pigtail macaques, CTD-N'")
+
+plot_name <- paste(dir, "CTD-N_vacc_macaque.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 13, height = 22)
+```
+
+
+CTD-N', vaccinated humans
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 526:593) %>%
+  filter(plot_group =="Vaccinated humans")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Vaccinated humans, CTD-N'")
+
+plot_name <- paste(dir, "CTD-N_vacc_humans.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 13, height = 30)
+```
+
+CTD-N', convalescent macaques
+```{r}
+#Need to first create a list of matrices of diff sel data for each sample
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 526:593) %>%
+  filter(plot_group =="Convalescent rhesus macaques")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Convalescent rhesus macaques, CTD-N'")
+
+plot_name <- paste(dir, "CTD-N_conv_macaques.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 13, height = 24)
+```
+
+SH-H, vaccinated macaques
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 1135:1170) %>%
+  filter(plot_group =="Vaccinated pigtail macaques")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Vaccinated pigtail macaques, SH-H")
+
+plot_name <- paste(dir, "SH_H_vacc_macaques.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 7, height = 22)
+```
+
+SH-H, vaccinated humans
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 1135:1170) %>%
+  filter(plot_group =="Vaccinated humans")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Vaccinated humans, SH-H")
+
+plot_name <- paste(dir, "SH_H_vacc_humans.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 7, height = 30)
+```
+
+SH-H, convalescent macaques
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 1135:1170) %>%
+  filter(plot_group =="Convalescent rhesus macaques")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Convalescent rhesus\nmacaques, SH-H")
+
+plot_name <- paste(dir, "SH_H_conv_macaques.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 7, height = 24)
+```
+
+SH-H, convalescent humans
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 1135:1170) %>%
+  filter(plot_group =="Convalescent humans")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Convalescent humans, SH-H")
+
+plot_name <- paste(dir, "SH_H_conv_humans.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 7, height = 24)
+```
+
+pre-FP post-FP, conv macaques
+```{r}
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 777:804) %>%
+  filter(plot_group =="Convalescent rhesus macaques")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+    theme(plot.margin=unit(c(2,0.2,2,0.2), "cm")) +
+    ggtitle("Convalescent rhesus\nmacaques, pre-FP")
+
+plot_name <- paste(dir, "pre_FP_conv_macaques.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 5.4, height = 24)
+```
+
+
+```{r}
+#Need to first create a list of matrices of diff sel data for each sample
+temp_data <- main_SPIKE2 %>% 
+  filter(Loc %in% 836:855) %>%
+  filter(plot_group =="Convalescent rhesus macaques")
+
+#Create a list of participants
+participants = unique(temp_data$participant_ID)
+
+#Create an empty list of matrices
+desired_length <- length(participants)
+matrices <- vector(mode = "list", desired_length)
+
+#Save each matrix for each participant in a list
+i = 1
+for (participant in participants) {
+  matrix <- temp_data %>% 
+    filter(participant_ID == participant) %>%
+    select(Loc, aa_sub, enr_diff_sel_1) %>%
+    acast(aa_sub ~ Loc)
+  matrices[[i]] <- matrix
+  names(matrices)[i] <- participant
+  i = i+1
+}
+#Now plot a faceted logo plot with each matrix as the input
+  temp_logoplot <- ggplot() + 
+  geom_logo(matrices, method='custom', seq_type='aa') + 
+  theme_logo() +
+  facet_wrap(~seq_group, ncol=1, scales='free_y', strip.position = "right") +
+    ylab("Scaled differential selection")+
+  scale_x_discrete(limits  =c(colnames(matrices[[1]])), breaks = every_nth(n=2)) +
+       theme(plot.title = element_text(hjust = 0.5,size=30), axis.title=element_text(size=25), axis.text=element_text(size=16),
+      strip.text = element_text(face = "bold", size=20)) +
+    rotate_x_text(angle=90) +
+       coord_cartesian(clip='off')+
+    theme(plot.margin=unit(c(2,2,2,2), "cm")) +
+    ggtitle("Convalescent rhesus\nmacaques, post-FP")
+
+plot_name <- paste(dir, "post_FP_conv_macaques.jpg", sep = "")
+
+ggsave(plot_name, temp_logoplot, width = 6, height = 24)
+```
