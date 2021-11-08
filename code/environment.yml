@@ -1,0 +1,13 @@
+name: nhp-dms
+channels:
+  - anaconda
+  - bioconda
+  - conda-forge
+dependencies:
+  - python=3.6
+  - xarray
+  - pandas
+  - matplotlib
+  - jupyter
+  - biopython
+  - pot
