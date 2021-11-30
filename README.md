@@ -4,7 +4,7 @@ Alexandra C. Willcox,<sup>1,2,3</sup> Kevin Sung,<sup>4</sup> Meghan E. Garrett,
 
 <sup>1</sup> Human Biology Division, Fred Hutchinson Cancer Research Center, Seattle, WA, USA\
 <sup>2</sup> Medical Scientist Training Program, University of Washington, Seattle, WA, USA\
-<sup>3</sup> Molecular and Cellular Biology Program, University of Washington, Seattle, WA, USA\ 
+<sup>3</sup> Molecular and Cellular Biology Program, University of Washington, Seattle, WA, USA\
 <sup>4</sup> Public Health Sciences Division, Fred Hutchinson Cancer Research Center, Seattle, WA, USA\
 <sup>5</sup> Department of Microbiology, University of Washington, Seattle, WA, USA\
 <sup>6</sup> Infectious Diseases and Translational Medicine, Washington National Primate Research Center, Seattle, WA, USA\
@@ -12,7 +12,7 @@ Alexandra C. Willcox,<sup>1,2,3</sup> Kevin Sung,<sup>4</sup> Meghan E. Garrett,
 <sup>8</sup> Department of Medicine, University of Washington, Seattle, WA, USA\
 <sup>9</sup> Laboratory of Virology, Division of Intramural Research, National Institute of Allergy and Infectious Diseases, National Institutes of Health, Hamilton, MT, USA\
 <sup>10</sup> Laboratory of Persistent Viral Diseases, Division of Intramural Research, National Institute of Allergy and Infectious Diseases, National Institutes of Health, Hamilton, MT, USA\
-<sup>11</sup> Center for Innate Immunity and Immune Disease, University of Washington, Seattle, WA, USA\
+<sup>11</sup> Center for Innate Immunity and Immune Disease, University of Washington, Seattle, WA, USA
 
 <sup>*</sup> Corresponding author\
 Email: joverbau@fredhutch.org
