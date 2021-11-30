@@ -1,27 +1,27 @@
 # Macaque-human differences in SARS-CoV-2 Spike antibody response elicited by vaccination or infection
 
-Alexandra C. Willcox,<sup>1,2,3</sup> Kevin Sung,<sup>4</sup> Meghan E. Garrett,<sup>1,3 Jared G. Galloway,<sup>4 Megan A. O’Connor,<sup>5,6 Jesse H. Erasmus,<sup>5,7 Jennifer K. Logue,<sup>8 David W. Hawman,<sup>9 Helen Y. Chu,<sup>8 Kim J. Hasenkrug,<sup>10 Deborah H. Fuller,<sup>5,6,11 Frederick A. Matsen IV,<sup>4 Julie Overbaugh<sup>1*
+Alexandra C. Willcox,<sup>1,2,3</sup> Kevin Sung,<sup>4</sup> Meghan E. Garrett,<sup>1,3</sup> Jared G. Galloway,<sup>4</sup> Megan A. O’Connor,<sup>5,6</sup> Jesse H. Erasmus,<sup>5,7</sup> Jennifer K. Logue,<sup>8</sup> David W. Hawman,<sup>9</sup> Helen Y. Chu,<sup>8</sup> Kim J. Hasenkrug,<sup>10</sup> Deborah H. Fuller,<sup>5,6,11</sup> Frederick A. Matsen IV,<sup>4</sup> Julie Overbaugh<sup>1*</sup>
 
-<sup>1 Human Biology Division, Fred Hutchinson Cancer Research Center, Seattle, WA, USA. 
-<sup>2 Medical Scientist Training Program, University of Washington, Seattle, WA, USA. 
-<sup>3 Molecular and Cellular Biology Program, University of Washington, Seattle, WA, USA. 
-<sup>4 Public Health Sciences Division, Fred Hutchinson Cancer Research Center, Seattle, WA, USA. 
-<sup>5 Department of Microbiology, University of Washington, Seattle, WA, USA. 
-<sup>6 Infectious Diseases and Translational Medicine, Washington National Primate Research Center, Seattle, WA, USA. 
-<sup>7 HDT Bio, Seattle, WA, USA. 
-<sup>8 Department of Medicine, University of Washington, Seattle, WA, USA. 
-<sup>9 Laboratory of Virology, Division of Intramural Research, National Institute of Allergy and Infectious Diseases, National Institutes of Health, Hamilton, MT, USA. 
-<sup>10 Laboratory of Persistent Viral Diseases, Division of Intramural Research, National Institute of Allergy and Infectious Diseases, National Institutes of Health, Hamilton, MT, USA. 
-<sup>11 Center for Innate Immunity and Immune Disease, University of Washington, Seattle, WA, USA. 
+<sup>1</sup> Human Biology Division, Fred Hutchinson Cancer Research Center, Seattle, WA, USA\
+<sup>2</sup> Medical Scientist Training Program, University of Washington, Seattle, WA, USA\
+<sup>3</sup> Molecular and Cellular Biology Program, University of Washington, Seattle, WA, USA\ 
+<sup>4</sup> Public Health Sciences Division, Fred Hutchinson Cancer Research Center, Seattle, WA, USA\
+<sup>5</sup> Department of Microbiology, University of Washington, Seattle, WA, USA\
+<sup>6</sup> Infectious Diseases and Translational Medicine, Washington National Primate Research Center, Seattle, WA, USA\
+<sup>7</sup> HDT Bio, Seattle, WA, USA\
+<sup>8</sup> Department of Medicine, University of Washington, Seattle, WA, USA\
+<sup>9</sup> Laboratory of Virology, Division of Intramural Research, National Institute of Allergy and Infectious Diseases, National Institutes of Health, Hamilton, MT, USA\
+<sup>10</sup> Laboratory of Persistent Viral Diseases, Division of Intramural Research, National Institute of Allergy and Infectious Diseases, National Institutes of Health, Hamilton, MT, USA\
+<sup>11</sup> Center for Innate Immunity and Immune Disease, University of Washington, Seattle, WA, USA\
 
-<sup>* Corresponding author
+<sup>*</sup> Corresponding author\
 Email: joverbau@fredhutch.org
 
 ## Abstract
-Macaques are a commonly used model for studying immunity to human viruses, including for studies of SARS-CoV-2 infection and vaccination. However, it is unknown whether macaque antibody responses recapitulate, and thus appropriately model, the response in humans. To answer this question, we employed a phage-based deep mutational scanning approach (Phage-DMS) to compare which linear epitopes are targeted on the SARS-CoV-2 Spike protein in humans and macaques following either vaccination or infection. We also used Phage-DMS to determine antibody escape pathways within each epitope, enabling a granular comparison of antibody binding specificities at the locus level. Overall, we identified some common epitope targets in both macaques and humans, including in the fusion peptide (FP) and stem helix-heptad repeat 2 (SH-H) regions. Differences between groups included a response to epitopes in the N-terminal domain (NTD) and C-terminal domain (CTD) in vaccinated humans but not vaccinated macaques, as well as recognition of a CTD epitope and epitopes flanking the FP in convalescent macaques but not convalescent humans. There was also considerable variability in the escape pathways among individuals within each group. Sera from convalescent macaques showed the least variability in escape overall and converged on a common response with vaccinated humans in the SH-H epitope region, suggesting highly similar antibodies were elicited. Collectively, these findings suggest that the antibody response to SARS-CoV-2 in macaques shares many features with humans, but with substantial differences in the recognition of certain epitopes and considerable individual variability in antibody escape profiles, suggesting a diverse repertoire of antibodies that can respond to major epitopes in both humans and macaques.![image](https://user-images.githubusercontent.com/69013762/144101871-3d7f87cd-0375-45fe-be35-ebb53f66ef5d.png)
+Macaques are a commonly used model for studying immunity to human viruses, including for studies of SARS-CoV-2 infection and vaccination. However, it is unknown whether macaque antibody responses recapitulate, and thus appropriately model, the response in humans. To answer this question, we employed a phage-based deep mutational scanning approach (Phage-DMS) to compare which linear epitopes are targeted on the SARS-CoV-2 Spike protein in humans and macaques following either vaccination or infection. We also used Phage-DMS to determine antibody escape pathways within each epitope, enabling a granular comparison of antibody binding specificities at the locus level. Overall, we identified some common epitope targets in both macaques and humans, including in the fusion peptide (FP) and stem helix-heptad repeat 2 (SH-H) regions. Differences between groups included a response to epitopes in the N-terminal domain (NTD) and C-terminal domain (CTD) in vaccinated humans but not vaccinated macaques, as well as recognition of a CTD epitope and epitopes flanking the FP in convalescent macaques but not convalescent humans. There was also considerable variability in the escape pathways among individuals within each group. Sera from convalescent macaques showed the least variability in escape overall and converged on a common response with vaccinated humans in the SH-H epitope region, suggesting highly similar antibodies were elicited. Collectively, these findings suggest that the antibody response to SARS-CoV-2 in macaques shares many features with humans, but with substantial differences in the recognition of certain epitopes and considerable individual variability in antibody escape profiles, suggesting a diverse repertoire of antibodies that can respond to major epitopes in both humans and macaques.
 
 ## What is this?
-This repository contains all of the data and code needed to recreate the analyses presented in the manuscript, "[manuscript title]".
+This repository contains all of the data and code needed to recreate the analyses presented in the manuscript, "Macaque-human differences in SARS-CoV-2 Spike antibody response elicited by vaccination or infection."
 
 ## What is contained in each directory?
 
