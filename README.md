@@ -1,6 +1,6 @@
 # Macaque-human differences in SARS-CoV-2 Spike antibody response elicited by vaccination or infection
 
-Alexandra C. Willcox,<sup>1,2,3 Kevin Sung,<sup>4 Meghan E. Garrett,<sup>1,3 Jared G. Galloway,<sup>4 Megan A. O’Connor,<sup>5,6 Jesse H. Erasmus,<sup>5,7 Jennifer K. Logue,<sup>8 David W. Hawman,<sup>9 Helen Y. Chu,<sup>8 Kim J. Hasenkrug,<sup>10 Deborah H. Fuller,<sup>5,6,11 Frederick A. Matsen IV,<sup>4 Julie Overbaugh<sup>1*
+Alexandra C. Willcox,<sup>1,2,3</sup> Kevin Sung,<sup>4</sup> Meghan E. Garrett,<sup>1,3 Jared G. Galloway,<sup>4 Megan A. O’Connor,<sup>5,6 Jesse H. Erasmus,<sup>5,7 Jennifer K. Logue,<sup>8 David W. Hawman,<sup>9 Helen Y. Chu,<sup>8 Kim J. Hasenkrug,<sup>10 Deborah H. Fuller,<sup>5,6,11 Frederick A. Matsen IV,<sup>4 Julie Overbaugh<sup>1*
 
 <sup>1 Human Biology Division, Fred Hutchinson Cancer Research Center, Seattle, WA, USA. 
 <sup>2 Medical Scientist Training Program, University of Washington, Seattle, WA, USA. 
