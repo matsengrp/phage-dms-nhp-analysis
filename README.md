@@ -1,4 +1,4 @@
-# Macaque-human differences in SARS-CoV-2 Spike antibody response elicited by vaccination or infection
+# Detailed analysis of antibody responses to SARS-CoV-2 vaccination and infection in macaques
 
 Alexandra C. Willcox,<sup>1,2,3</sup> Kevin Sung,<sup>4</sup> Meghan E. Garrett,<sup>1,3</sup> Jared G. Galloway,<sup>4</sup> Jesse H. Erasmus,<sup>5,6</sup> Jennifer K. Logue,<sup>7</sup> David W. Hawman,<sup>8</sup> Helen Y. Chu,<sup>7</sup> Kim J. Hasenkrug,<sup>9</sup> Deborah H. Fuller,<sup>5,10,11</sup> Frederick A. Matsen IV,<sup>4</sup> Julie Overbaugh<sup>1*</sup>
 
@@ -22,7 +22,7 @@ Macaques are a commonly used model for studying immunity to human viruses, inclu
 macaques and humans, including in the fusion peptide (FP) and stem helix-heptad repeat 2 (SH-H) regions. Differences between groups included a response to epitopes in the N-terminal domain (NTD) and C-terminal domain (CTD) in vaccinated humans but not vaccinated macaques, as well as recognition of a CTD epitope and epitopes flanking the FP in convalescent macaques but not convalescent humans. There was also considerable variability in the escape pathways among individuals within each group. Sera from convalescent macaques showed the least variability in escape overall and converged on a common response with vaccinated humans in the SH-H epitope region, suggesting highly similar antibodies were elicited. Collectively, these findings suggest that the antibody response to SARS-CoV-2 in macaques shares many features with humans, but with substantial differences in the recognition of certain epitopes and considerable individual variability in antibody escape profiles, suggesting a diverse repertoire of antibodies that can respond to major epitopes in both humans and macaques. Differences in macaque species and exposure type may also contribute to these findings.
 
 ## What is this?
-This repository contains all of the data and code needed to recreate the analyses presented in the manuscript, "Macaque-human differences in SARS-CoV-2 Spike antibody response elicited by vaccination or infection."
+This repository contains all of the data and code needed to recreate the analyses presented in the manuscript, "Detailed analysis of antibody responses to SARS-CoV-2 vaccination and infection in macaques."
 
 ## What is contained in each directory?
 
